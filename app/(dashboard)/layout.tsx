@@ -1,6 +1,6 @@
+import { Navigation } from '@/components/Navigation'
 import { getServerSession } from 'next-auth/next'
 import { redirect } from 'next/navigation'
-import { Navigation } from './components/Navigation'
 
 export default async function DashboardLayout({
   children,
