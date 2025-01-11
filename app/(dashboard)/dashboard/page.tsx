@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DollarSign, Users, CalendarDays, Loader2 } from 'lucide-react'
 import { Overview } from '@/components/dashboard/overview'
 import { RecentBookings } from '@/components/dashboard/recent-bookings'
-import { DollarSign, Users, CalendarDays, Loader2 } from 'lucide-react'
 
 export default async function DashboardPage() {
   return (
