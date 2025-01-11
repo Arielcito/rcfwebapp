@@ -1,24 +1,24 @@
-import { Navigation } from '@/components/Navigation'
-import { getServerSession } from 'next-auth/next'
-import { redirect } from 'next/navigation'
+import { ReactNode } from 'react'
+import { DashboardHeader } from '@/components/dashboard/header'
+import { DashboardNav } from '@/components/dashboard/nav'
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const session = await getServerSession()
+interface DashboardLayoutProps {
+  children: ReactNode   
+}
 
-  if (!session) {
-    redirect('/login')
-  }
-
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div>
-      <Navigation />
-      <main className="container mx-auto py-4">
-        {children}
-      </main>
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <DashboardNav className="hidden md:flex w-64 flex-col fixed inset-y-0" />
+      
+      {/* Main content */}
+      <div className="flex flex-col flex-1 md:pl-64">
+        <DashboardHeader />
+        <main className="flex-1 overflow-y-auto bg-background">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

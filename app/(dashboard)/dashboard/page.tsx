@@ -23,7 +23,7 @@ async function getMonthlyStats() {
   }
 }
 
-export default async function Dashboard() {
+export default async function DashboardPage() {
   const session = await getServerSession()
   
   if (!session) {
@@ -45,15 +45,15 @@ export default async function Dashboard() {
           </CardHeader>
           <CardContent>
             {reservations.length > 0 ? (
-              <ul>
+              <ul className="space-y-2">
                 {reservations.map((reservation: any) => (
-                  <li key={reservation.id}>
+                  <li key={reservation.id} className="p-2 bg-muted rounded-lg">
                     {reservation.date} - {reservation.fieldName}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p>No hay reservas recientes</p>
+              <p className="text-muted-foreground">No hay reservas recientes</p>
             )}
           </CardContent>
         </Card>
@@ -63,17 +63,16 @@ export default async function Dashboard() {
           </CardHeader>
           <CardContent>
             {monthlyStats ? (
-              <div>
+              <div className="space-y-2">
                 <p>Total de reservas: {monthlyStats.totalReservations}</p>
                 <p>Ingresos: ${monthlyStats.totalRevenue}</p>
               </div>
             ) : (
-              <p>No hay datos disponibles</p>
+              <p className="text-muted-foreground">No hay datos disponibles</p>
             )}
           </CardContent>
         </Card>
       </div>
     </div>
   )
-}
-
+} 

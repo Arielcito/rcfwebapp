@@ -9,31 +9,75 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import Image from 'next/image'
 import { Separator } from '@/components/ui/separator'
+import { Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+
+const loginSchema = z.object({
+  email: z.string()
+    .min(1, 'El email es requerido')
+    .email('Ingresa un email válido'),
+  password: z.string()
+    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .max(50, 'La contraseña no puede tener más de 50 caracteres'),
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    })
-    if (result?.error) {
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const handleSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true)
+    try {
+      const result = await signIn('credentials', {
+        redirect: true,
+        email: data.email,
+        password: data.password,
+        callbackUrl: '/dashboard'
+      })
+      if (result?.error) {
+        try {
+          const errorData = JSON.parse(result.error)
+          toast({
+            title: "Error de inicio de sesión",
+            description: errorData.message,
+            variant: "destructive",
+          })
+          if (errorData.message.includes('contraseña')) {
+            form.setValue('password', '')
+          }
+        } catch {
+          toast({
+            title: "Error de inicio de sesión",
+            description: "Hubo un problema al iniciar sesión",
+            variant: "destructive",
+          })
+        }
+      }
+    } catch (error) {
       toast({
-        title: "Error de inicio de sesión",
-        description: result.error,
+        title: "Error",
+        description: "Hubo un problema al conectar con el servidor",
         variant: "destructive",
       })
-    } else {
-      router.push('/dashboard')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleGoogleSignIn = () => {
+    setIsLoading(true)
     signIn('google', { callbackUrl: '/dashboard' })
   }
 
@@ -47,37 +91,54 @@ export default function Login() {
         </div>
         <div className="bg-card rounded-lg shadow-lg p-8">
           <h1 className="text-2xl font-bold text-center mb-6">Iniciar sesión</h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
                 Email
               </label>
               <Input
-                id="email"
+                {...form.register('email')}
                 type="email"
                 placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                disabled={isLoading}
                 className="mt-1"
               />
+              {form.formState.errors.email && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.email.message}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium">
                 Contraseña
               </label>
               <Input
-                id="password"
+                {...form.register('password')}
                 type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                disabled={isLoading}
                 className="mt-1"
               />
+              {form.formState.errors.password && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.password.message}
+                </p>
+              )}
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-              Iniciar sesión
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary/90" 
+              disabled={isLoading || !form.formState.isValid}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cargando...
+                </>
+              ) : (
+                'Iniciar sesión'
+              )}
             </Button>
           </form>
 
@@ -98,9 +159,19 @@ export default function Login() {
               variant="outline"
               className="w-full mt-4"
               onClick={handleGoogleSignIn}
+              disabled={isLoading}
             >
-              <Image src="/google.svg" alt="Google" width={20} height={20} className="mr-2" />
-              Continuar con Google
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cargando...
+                </>
+              ) : (
+                <>
+                  <Image src="/google.svg" alt="Google" width={20} height={20} className="mr-2" />
+                  Continuar con Google
+                </>
+              )}
             </Button>
           </div>
 

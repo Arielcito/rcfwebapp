@@ -8,16 +8,48 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import axiosInstance from '@/lib/axios'
 import Image from 'next/image'
+import { Loader2 } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+
+const registerSchema = z.object({
+  email: z.string()
+    .min(1, 'El email es requerido')
+    .email('Ingresa un email válido'),
+  password: z.string()
+    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .max(50, 'La contraseña no puede tener más de 50 caracteres')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'La contraseña debe contener al menos una letra mayúscula, una minúscula y un número'),
+  confirmPassword: z.string()
+    .min(1, 'Confirma tu contraseña'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmPassword"],
+})
+
+type RegisterFormValues = z.infer<typeof registerSchema>
 
 export default function Register() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
+
+  const handleSubmit = async (data: RegisterFormValues) => {
+    setIsLoading(true)
     try {
-      const response = await axiosInstance.post('/api/auth/register', { email, password })
+      const response = await axiosInstance.post('/api/auth/register', {
+        email: data.email,
+        password: data.password,
+      })
 
       if (response.status === 200) {
         toast({
@@ -25,19 +57,16 @@ export default function Register() {
           description: "Tu cuenta ha sido creada. Por favor, inicia sesión.",
         })
         router.push('/login')
-      } else {
-        toast({
-          title: "Error en el registro",
-          description: response.data.message || "Hubo un problema al crear tu cuenta.",
-          variant: "destructive",
-        })
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Hubo un problema al crear tu cuenta"
       toast({
-        title: "Error",
-        description: "Hubo un problema al conectar con el servidor.",
+        title: "Error en el registro",
+        description: errorMessage,
         variant: "destructive",
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -51,37 +80,71 @@ export default function Register() {
         </div>
         <div className="bg-card rounded-lg shadow-lg p-8">
           <h1 className="text-2xl font-bold text-center mb-6">Registrarse</h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
                 Email
               </label>
               <Input
-                id="email"
+                {...form.register('email')}
                 type="email"
                 placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                disabled={isLoading}
                 className="mt-1"
               />
+              {form.formState.errors.email && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.email.message}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium">
                 Contraseña
               </label>
               <Input
-                id="password"
+                {...form.register('password')}
                 type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                disabled={isLoading}
                 className="mt-1"
               />
+              {form.formState.errors.password && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.password.message}
+                </p>
+              )}
             </div>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-              Registrarse
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium">
+                Confirmar Contraseña
+              </label>
+              <Input
+                {...form.register('confirmPassword')}
+                type="password"
+                placeholder="••••••••"
+                disabled={isLoading}
+                className="mt-1"
+              />
+              {form.formState.errors.confirmPassword && (
+                <p className="text-sm text-destructive mt-1">
+                  {form.formState.errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary/90" 
+              disabled={isLoading || !form.formState.isValid}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Cargando...
+                </>
+              ) : (
+                'Registrarse'
+              )}
             </Button>
           </form>
 
