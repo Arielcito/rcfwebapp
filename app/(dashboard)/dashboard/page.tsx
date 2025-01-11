@@ -1,75 +1,92 @@
-import { getServerSession } from 'next-auth/next'
-import { redirect } from 'next/navigation'
-import axiosInstance from '@/lib/axios'
+import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
-async function getReservations() {
-  try {
-    const response = await axiosInstance.get('/api/reservations')
-    return response.data
-  } catch (error) {
-    console.error('Error fetching reservations:', error)
-    return []
-  }
-}
-
-async function getMonthlyStats() {
-  try {
-    const response = await axiosInstance.get('/api/stats/monthly')
-    return response.data
-  } catch (error) {
-    console.error('Error fetching monthly stats:', error)
-    return null
-  }
-}
+import { Overview } from '@/components/dashboard/overview'
+import { RecentBookings } from '@/components/dashboard/recent-bookings'
+import { DollarSign, Users, CalendarDays, Loader2 } from 'lucide-react'
 
 export default async function DashboardPage() {
-  const session = await getServerSession()
-  
-  if (!session) {
-    redirect('/login')
-  }
-
-  const [reservations, monthlyStats] = await Promise.all([
-    getReservations(),
-    getMonthlyStats()
-  ])
-
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="flex-1 space-y-4 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader>
-            <CardTitle>Últimas Reservas</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Reservas Totales
+            </CardTitle>
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {reservations.length > 0 ? (
-              <ul className="space-y-2">
-                {reservations.map((reservation: any) => (
-                  <li key={reservation.id} className="p-2 bg-muted rounded-lg">
-                    {reservation.date} - {reservation.fieldName}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground">No hay reservas recientes</p>
-            )}
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              +0% desde el último mes
+            </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>Datos del Mes Actual</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Ingresos Totales
+            </CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {monthlyStats ? (
-              <div className="space-y-2">
-                <p>Total de reservas: {monthlyStats.totalReservations}</p>
-                <p>Ingresos: ${monthlyStats.totalRevenue}</p>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No hay datos disponibles</p>
-            )}
+            <div className="text-2xl font-bold">$0</div>
+            <p className="text-xs text-muted-foreground">
+              +0% desde el último mes
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Usuarios Activos
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              +0% desde el último mes
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Canchas Activas
+            </CardTitle>
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">
+              +0% desde el último mes
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Resumen</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
+              <Overview />
+            </Suspense>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Reservas Recientes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
+              <RecentBookings />
+            </Suspense>
           </CardContent>
         </Card>
       </div>
