@@ -26,9 +26,11 @@ export const authOptions: NextAuthOptions = {
           if (response.data) {
             console.log('👤 User data received:', response.data)
             return {
-              id: response.data.id,
-              email: response.data.email,
-              accessToken: response.data.accessToken,
+              id: response.data.user.id,
+              email: response.data.user.email,
+              name: response.data.user.name,
+              role: response.data.user.role,
+              accessToken: response.data.token,
             }
           }
           console.log('❌ No user data in response')
@@ -48,6 +50,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/login',
+    signOut: '/',
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -55,6 +58,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.email = user.email
+        token.name = user.name
         token.accessToken = user.accessToken
       }
       return token
@@ -64,6 +68,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.email = token.email as string
+        session.user.name = token.name as string
+        session.user.role = token.role as string
         session.user.accessToken = token.accessToken as string
       }
       return session

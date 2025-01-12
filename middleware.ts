@@ -10,17 +10,20 @@ export async function middleware(request: NextRequest) {
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
       secureCookie: process.env.NODE_ENV === 'production',
-      cookieName: 'next-auth.session-token'
+      cookieName: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token'
     })
     
     // Log del token completo en desarrollo
     if (process.env.NODE_ENV === 'development') {
       console.log('🔑 Token details:', JSON.stringify(token, null, 2))
       console.log('🍪 Cookies:', request.cookies.toString())
+      console.log('🔐 NEXTAUTH_SECRET:', process.env.NEXTAUTH_SECRET ? 'Presente' : 'No presente')
     } else {
       console.log('🔑 Token status:', token ? 'Present' : 'Not present')
     }
-    
+     
     const isAuthPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register'
     console.log('📍 Is auth page:', isAuthPage)
 

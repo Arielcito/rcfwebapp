@@ -6,7 +6,7 @@ import SessionProvider from './SessionProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Futbol Manager',
+  title: 'RCF ',
   description: 'Gestión de canchas de fútbol',
 }
 

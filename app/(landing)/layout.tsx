@@ -27,7 +27,7 @@ export default function LandingLayout({
       </main>
       <footer className="bg-gray-100">
         <div className="container mx-auto px-4 py-8 text-center text-gray-600">
-          © 2023 Futbol Manager. Todos los derechos reservados.
+          © 2025 RCF. Todos los derechos reservados.
         </div>
       </footer>
     </div>
