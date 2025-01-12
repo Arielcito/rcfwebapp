@@ -3,8 +3,50 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, Users, CalendarDays, Loader2 } from 'lucide-react'
 import { Overview } from '@/components/dashboard/overview'
 import { RecentBookings } from '@/components/dashboard/recent-bookings'
+import { userService, predioService, canchaService } from '@/lib/services/api'
+
+async function getStats() {
+  try {
+    console.log('📊 Obteniendo estadísticas...')
+    const [users, predios, canchas] = await Promise.all([
+      userService.getAll().catch((e) => {
+        console.error('Error al obtener usuarios:', e.message)
+        return []
+      }),
+      predioService.getAll().catch((e) => {
+        console.error('Error al obtener predios:', e.message)
+        return []
+      }),
+      canchaService.getAll().catch((e) => {
+        console.error('Error al obtener canchas:', e.message)
+        return []
+      }),
+    ])
+
+    console.log('📈 Estadísticas obtenidas:', {
+      usuarios: users?.length || 0,
+      predios: predios?.length || 0,
+      canchas: canchas?.length || 0
+    })
+
+    return {
+      users: users?.length || 0,
+      predios: predios?.length || 0,
+      canchas: canchas?.length || 0,
+    }
+  } catch (error) {
+    console.error('Error general al obtener estadísticas:', error)
+    return {
+      users: 0,
+      predios: 0,
+      canchas: 0,
+    }
+  }
+}
 
 export default async function DashboardPage() {
+  const stats = await getStats()
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -47,9 +89,9 @@ export default async function DashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{stats.users}</div>
             <p className="text-xs text-muted-foreground">
-              +0% desde el último mes
+              Usuarios registrados
             </p>
           </CardContent>
         </Card>
@@ -61,9 +103,9 @@ export default async function DashboardPage() {
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{stats.canchas}</div>
             <p className="text-xs text-muted-foreground">
-              +0% desde el último mes
+              En {stats.predios} predios
             </p>
           </CardContent>
         </Card>

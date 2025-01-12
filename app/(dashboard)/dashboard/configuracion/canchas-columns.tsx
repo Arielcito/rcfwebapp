@@ -1,7 +1,7 @@
 'use client'
 
-import { ColumnDef } from '@tanstack/react-table'
-import { Cancha } from '@/types/api'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { Cancha } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import {
 import { MoreHorizontal, Pencil, Trash } from 'lucide-react'
 import { canchaService } from '@/lib/services/api'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 export const canchaColumns: ColumnDef<Cancha>[] = [
   {
@@ -45,16 +46,21 @@ export const canchaColumns: ColumnDef<Cancha>[] = [
   {
     id: 'actions',
     cell: ({ row }) => {
+      const router = useRouter()
       const cancha = row.original
 
       const handleDelete = async () => {
         try {
           await canchaService.delete(cancha.id)
           toast.success('Cancha eliminada correctamente')
-          // TODO: Refresh data
+          router.refresh()
         } catch (error) {
           toast.error('Error al eliminar la cancha')
         }
+      }
+
+      const handleEdit = () => {
+        router.push(`/dashboard/configuracion/canchas/edit/${cancha.id}`)
       }
 
       return (
@@ -67,7 +73,7 @@ export const canchaColumns: ColumnDef<Cancha>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>
               <Pencil className="mr-2 h-4 w-4" />
               Editar
             </DropdownMenuItem>

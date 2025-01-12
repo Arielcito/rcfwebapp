@@ -9,13 +9,27 @@ import { canchaColumns } from './canchas-columns'
 import { predioService, canchaService } from '@/lib/services/api'
 
 async function getPredios() {
-  const predios = await predioService.getAll()
-  return predios
+  try {
+    console.log('🏢 Obteniendo predios...')
+    const predios = await predioService.getAll()
+    console.log('✅ Predios obtenidos:', predios.length)
+    return predios
+  } catch (error) {
+    console.error('❌ Error al obtener predios:', error.message)
+    return []
+  }
 }
 
 async function getCanchas() {
-  const canchas = await canchaService.getAll()
-  return canchas
+  try {
+    console.log('⚽ Obteniendo canchas...')
+    const canchas = await canchaService.getAll()
+    console.log('✅ Canchas obtenidas:', canchas.length)
+    return canchas
+  } catch (error) {
+    console.error('❌ Error al obtener canchas:', error.message)
+    return []
+  }
 }
 
 export default async function SettingsPage() {

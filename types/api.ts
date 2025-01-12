@@ -57,4 +57,21 @@ export interface UpdateUserData {
   name?: string;
   email?: string;
   password?: string;
+}
+
+export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+
+export interface Booking {
+  id: string
+  date: string
+  startTime: string
+  endTime: string
+  canchaId: string
+  userId: string
+  status: BookingStatus
+  price: number
+  userName: string
+  canchaName: string
+  createdAt: string
+  updatedAt: string
 } 

@@ -1,12 +1,17 @@
 import { Suspense } from 'react'
-import { DataTable } from '@/components/ui/data-table'
+
 import { columns } from './columns'
 import { userService } from '@/lib/services/api'
 import { Loader2 } from 'lucide-react'
+import { DataTable } from '@/components/ui/data-table'
 
 async function getUsers() {
-  const users = await userService.getAll()
-  return users
+  try {
+    const users = await userService.getAll()
+    return users
+  } catch (error) {
+    return []
+  }
 }
 
 export default async function UsersPage() {

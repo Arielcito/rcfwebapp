@@ -5,24 +5,19 @@ import { Loader2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DataTable } from '@/components/ui/data-table'
 import { columns } from './columns'
+import { bookingService } from '@/lib/services/api/bookingService'
 
-// TODO: Create booking service and types
-const mockBookings = [
-  {
-    id: '1',
-    date: new Date().toISOString(),
-    startTime: '18:00',
-    endTime: '19:00',
-    canchaId: '1',
-    userId: '1',
-    status: 'CONFIRMED',
-    price: 1000,
-    userName: 'John Doe',
-    canchaName: 'Cancha 1'
+async function getBookings() {
+  try {
+    return await bookingService.getAll()
+  } catch (error) {
+    return []
   }
-]
+}
 
 export default async function BookingsPage() {
+  const bookings = await getBookings()
+
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -57,7 +52,7 @@ export default async function BookingsPage() {
         </TabsContent>
         <TabsContent value="list">
           <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
-            <DataTable columns={columns} data={mockBookings} />
+            <DataTable columns={columns} data={bookings} />
           </Suspense>
         </TabsContent>
       </Tabs>

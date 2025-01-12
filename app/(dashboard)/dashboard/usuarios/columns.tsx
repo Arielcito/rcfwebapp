@@ -1,7 +1,7 @@
 'use client'
 
-import { ColumnDef } from '@tanstack/react-table'
-import { User } from '@/types/api'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { User } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import {
 import { MoreHorizontal, Pencil, Trash } from 'lucide-react'
 import { userService } from '@/lib/services/api'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -41,16 +42,21 @@ export const columns: ColumnDef<User>[] = [
   {
     id: 'actions',
     cell: ({ row }) => {
+      const router = useRouter()
       const user = row.original
 
       const handleDelete = async () => {
         try {
           await userService.delete(user.id)
           toast.success('Usuario eliminado correctamente')
-          // TODO: Refresh data
+          router.refresh()
         } catch (error) {
           toast.error('Error al eliminar el usuario')
         }
+      }
+
+      const handleEdit = () => {
+        router.push(`/dashboard/usuarios/edit/${user.id}`)
       }
 
       return (
@@ -63,7 +69,7 @@ export const columns: ColumnDef<User>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>
               <Pencil className="mr-2 h-4 w-4" />
               Editar
             </DropdownMenuItem>
