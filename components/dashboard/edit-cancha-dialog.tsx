@@ -48,19 +48,26 @@ export function EditCanchaDialog({ cancha, predioId, children }: EditCanchaDialo
   const [formData, setFormData] = useState<CreateCanchaData>({
     nombre: cancha?.nombre || '',
     predioId: predioId,
-    tipo: cancha?.tipo || null,
-    capacidadJugadores: cancha?.capacidadJugadores || null,
-    tipoSuperficie: cancha?.tipoSuperficie || null,
+    tipo: cancha?.tipo || undefined,
+    capacidadJugadores: cancha?.capacidadJugadores || undefined,
+    tipoSuperficie: cancha?.tipoSuperficie || undefined,
     tieneIluminacion: cancha?.tieneIluminacion || false,
     esTechada: cancha?.esTechada || false,
     precioPorHora: cancha?.precioPorHora || '',
     requiereSeña: cancha?.requiereSeña || false,
     montoSeña: cancha?.montoSeña || 0,
+    imagen: cancha?.imagen || '',
   })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+
+    if (!formData.nombre || !formData.capacidadJugadores || !formData.tipoSuperficie || !formData.precioPorHora) {
+      toast.error('Por favor complete todos los campos requeridos')
+      setLoading(false)
+      return
+    }
 
     try {
       if (cancha) {
@@ -86,52 +93,79 @@ export function EditCanchaDialog({ cancha, predioId, children }: EditCanchaDialo
         <DialogHeader>
           <DialogTitle>{cancha ? 'Editar' : 'Nueva'} Cancha</DialogTitle>
           <DialogDescription>
-            {cancha ? 'Actualiza los datos de la cancha' : 'Agrega una nueva cancha'}. Haz clic en guardar cuando termines.
+            {cancha ? 'Actualiza los datos de la cancha' : 'Agrega una nueva cancha'}. Los campos con * son requeridos.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="imagen" className="text-right">
+                Imagen
+              </Label>
+              <Input
+                id="imagen"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    const reader = new FileReader()
+                    reader.onloadend = () => {
+                      setFormData(prev => ({ ...prev, imagen: reader.result as string }))
+                    }
+                    reader.readAsDataURL(file)
+                  }
+                }}
+                className="col-span-3"
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="nombre" className="text-right">
-                Nombre
+                Nombre *
               </Label>
               <Input
                 id="nombre"
                 value={formData.nombre}
+                placeholder="ej: Cancha 1 - Principal"
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, nombre: e.target.value }))
                 }
                 className="col-span-3"
+                required
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="capacidadJugadores" className="text-right">
-                Capacidad
+                Capacidad *
               </Label>
               <Input
                 id="capacidadJugadores"
                 type="number"
+                placeholder="ej: 10"
                 value={formData.capacidadJugadores || ''}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, capacidadJugadores: parseInt(e.target.value) || null }))
+                  setFormData((prev) => ({ ...prev, capacidadJugadores: Number.parseInt(e.target.value) || undefined }))
                 }
                 className="col-span-3"
+                required
               />
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="tipoSuperficie" className="text-right">
-                Superficie
+                Superficie *
               </Label>
               <Select
                 value={formData.tipoSuperficie || ''}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, tipoSuperficie: value }))
                 }
+                required
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Selecciona un tipo" />
+                  <SelectValue placeholder="ej: Césped sintético" />
                 </SelectTrigger>
                 <SelectContent>
                   {tiposSuperficie.map((tipo) => (
@@ -145,16 +179,18 @@ export function EditCanchaDialog({ cancha, predioId, children }: EditCanchaDialo
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="precioPorHora" className="text-right">
-                Precio/Hora
+                Precio/Hora *
               </Label>
               <Input
                 id="precioPorHora"
                 type="number"
+                placeholder="ej: 5000"
                 value={formData.precioPorHora}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, precioPorHora: e.target.value }))
                 }
                 className="col-span-3"
+                required
               />
             </div>
 
@@ -202,9 +238,10 @@ export function EditCanchaDialog({ cancha, predioId, children }: EditCanchaDialo
                 <Input
                   id="montoSeña"
                   type="number"
+                  placeholder="ej: 2000"
                   value={formData.montoSeña}
                   onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, montoSeña: parseInt(e.target.value) || 0 }))
+                    setFormData((prev) => ({ ...prev, montoSeña: Number.parseInt(e.target.value) || 0 }))
                   }
                   className="col-span-3"
                 />

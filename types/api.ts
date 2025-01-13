@@ -104,6 +104,7 @@ export interface CreateCanchaData {
   ultimoMantenimiento?: string;
   equipamientoIncluido?: string;
   imagenUrl?: string;
+  imagen?: string;
   requiereSeña: boolean;
   montoSeña: number;
 }
