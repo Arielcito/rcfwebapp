@@ -7,17 +7,13 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(async (config) => {
   const session = await getSession();
-  console.log('Sesión actual:', session);
-  console.log('URL de la petición:', config.url);
   
   if (session?.user?.accessToken) {
     config.headers.Authorization = `Bearer ${session.user.accessToken}`;
-    console.log('Token enviado:', `Bearer ${session.user.accessToken}`);
   } else {
     console.log('No hay token disponible en la sesión');
   }
   
-  console.log('Headers de la petición:', config.headers);
   return config;
 }, (error) => {
   console.error('Error en el interceptor de solicitud:', error);

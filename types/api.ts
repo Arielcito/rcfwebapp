@@ -9,11 +9,24 @@ export interface User {
 
 export interface Predio {
   id: string;
-  name: string;
-  address: string;
-  ownerId: string;
-  createdAt: string;
-  updatedAt: string;
+  usuarioId: string | null;
+  nombre: string;
+  direccion: string;
+  ciudad: string;
+  provincia: string;
+  codigoPostal: string | null;
+  telefono: string;
+  email: string | null;
+  latitud: string;
+  longitud: string;
+  capacidadEstacionamiento: number | null;
+  tieneVestuarios: boolean | null;
+  tieneCafeteria: boolean | null;
+  horarioApertura: string;
+  horarioCierre: string;
+  diasOperacion: string[] | null;
+  imagenUrl: string | null;
+  fechaRegistro: string;
 }
 
 export interface Cancha {
@@ -29,13 +42,41 @@ export interface Cancha {
 
 // Request types
 export interface CreatePredioData {
-  name: string;
-  address: string;
+  nombre: string;
+  direccion: string;
+  ciudad: string;
+  provincia: string;
+  codigoPostal?: string;
+  telefono: string;
+  email?: string;
+  latitud: string;
+  longitud: string;
+  capacidadEstacionamiento?: number;
+  tieneVestuarios?: boolean;
+  tieneCafeteria?: boolean;
+  horarioApertura: string;
+  horarioCierre: string;
+  diasOperacion?: string[];
+  imagenUrl?: string;
 }
 
 export interface UpdatePredioData {
-  name?: string;
-  address?: string;
+  nombre?: string;
+  direccion?: string;
+  ciudad?: string;
+  provincia?: string;
+  codigoPostal?: string;
+  telefono?: string;
+  email?: string;
+  latitud?: string;
+  longitud?: string;
+  capacidadEstacionamiento?: number;
+  tieneVestuarios?: boolean;
+  tieneCafeteria?: boolean;
+  horarioApertura?: string;
+  horarioCierre?: string;
+  diasOperacion?: string[];
+  imagenUrl?: string;
 }
 
 export interface CreateCanchaData {

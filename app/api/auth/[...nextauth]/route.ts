@@ -12,19 +12,14 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        console.log('🔑 Authorize function called')
         if (!credentials?.email || !credentials?.password) {
-          console.error('❌ Missing credentials')
           throw new Error('Email y contraseña son requeridos')
         }
 
         try {
-          console.log('📡 Making login request to backend')
           const response = await axiosInstance.post('/api/users/login', credentials)
           
-          console.log('✅ Login response received:', response.status)
           if (response.data) {
-            console.log('👤 User data received:', response.data)
             return {
               id: response.data.user.id,
               email: response.data.user.email,
@@ -33,10 +28,8 @@ export const authOptions: NextAuthOptions = {
               accessToken: response.data.token,
             }
           }
-          console.log('❌ No user data in response')
           return null
         } catch (error: any) {
-          console.error('❌ Login error:', error.response?.data || error.message)
           const message = error.response?.data?.message || 'Error al iniciar sesión'
           throw new Error(message)
         }
@@ -54,7 +47,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log('🎫 JWT Callback', { hasUser: !!user, hasToken: !!token, user, token })
       if (user) {
         token.id = user.id
         token.email = user.email
@@ -64,7 +56,6 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      console.log('🔐 Session Callback', { hasSession: !!session, hasToken: !!token, token })
       if (session.user) {
         session.user.id = token.id as string
         session.user.email = token.email as string

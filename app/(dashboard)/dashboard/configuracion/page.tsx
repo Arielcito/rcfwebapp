@@ -1,39 +1,39 @@
 import { Suspense } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2 } from 'lucide-react'
+import { Plus, Loader2, Settings } from 'lucide-react'
 import { DataTable } from '@/components/ui/data-table'
-import { predioColumns } from './predios-columns'
 import { canchaColumns } from './canchas-columns'
-import { predioService, canchaService } from '@/lib/services/api'
-
-async function getPredios() {
-  try {
-    console.log('🏢 Obteniendo predios...')
-    const predios = await predioService.getAll()
-    console.log('✅ Predios obtenidos:', predios.length)
-    return predios
-  } catch (error) {
-    console.error('❌ Error al obtener predios:', error.message)
-    return []
-  }
-}
+import { canchaService } from '@/lib/services/api'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { EditProfileDialog } from '@/components/dashboard/edit-profile-dialog'
 
 async function getCanchas() {
   try {
     console.log('⚽ Obteniendo canchas...')
+    const session = await getServerSession(authOptions)
     const canchas = await canchaService.getAll()
-    console.log('✅ Canchas obtenidas:', canchas.length)
-    return canchas
-  } catch (error) {
-    console.error('❌ Error al obtener canchas:', error.message)
+    const filteredCanchas = canchas.filter(cancha => cancha.predioId === session?.user?.predioId)
+    console.log('✅ Canchas obtenidas:', filteredCanchas.length)
+    return filteredCanchas
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('❌ Error al obtener canchas:', error.message)
+    } else {
+      console.error('❌ Error desconocido al obtener canchas')
+    }
     return []
   }
 }
 
 export default async function SettingsPage() {
-  const [predios, canchas] = await Promise.all([getPredios(), getCanchas()])
+  const session = await getServerSession(authOptions)
+  const canchas = await getCanchas()
+
+  if (!session?.user) {
+    return null
+  }
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -41,44 +41,42 @@ export default async function SettingsPage() {
         <h2 className="text-3xl font-bold tracking-tight">Configuración</h2>
       </div>
 
-      <Tabs defaultValue="predios" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="predios">Predios</TabsTrigger>
-          <TabsTrigger value="canchas">Canchas</TabsTrigger>
-        </TabsList>
-        <TabsContent value="predios" className="space-y-4">
-          <div className="flex justify-between">
-            <div>
-              <h3 className="text-lg font-medium">Predios</h3>
-              <p className="text-sm text-muted-foreground">
-                Gestiona los predios disponibles
-              </p>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Perfil</CardTitle>
+            <EditProfileDialog user={session.user}>
+              <Button variant="ghost" size="icon">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </EditProfileDialog>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Nombre: {session.user.name}</p>
+              <p className="text-sm font-medium">Email: {session.user.email}</p>
+              <p className="text-sm font-medium">Rol: {session.user.role}</p>
             </div>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Nuevo Predio
-            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <div>
+            <h3 className="text-lg font-medium">Canchas</h3>
+            <p className="text-sm text-muted-foreground">
+              Gestiona las canchas disponibles
+            </p>
           </div>
-          <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
-            <DataTable columns={predioColumns} data={predios} />
-          </Suspense>
-        </TabsContent>
-        <TabsContent value="canchas" className="space-y-4">
-          <div className="flex justify-between">
-            <div>
-              <h3 className="text-lg font-medium">Canchas</h3>
-              <p className="text-sm text-muted-foreground">
-                Gestiona las canchas disponibles
-              </p>
-            </div>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Nueva Cancha
-            </Button>
-          </div>
-          <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
-            <DataTable columns={canchaColumns} data={canchas} />
-          </Suspense>
-        </TabsContent>
-      </Tabs>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Nueva Cancha
+          </Button>
+        </div>
+        <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
+          <DataTable columns={canchaColumns} data={canchas} />
+        </Suspense>
+      </div>
     </div>
   )
 } 

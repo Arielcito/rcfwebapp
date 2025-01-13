@@ -1,58 +1,60 @@
-import { Suspense } from 'react'
+'use client'
+
+import { Suspense, useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, Users, CalendarDays, Loader2 } from 'lucide-react'
 import { Overview } from '@/components/dashboard/overview'
 import { RecentBookings } from '@/components/dashboard/recent-bookings'
-import { userService, predioService, canchaService } from '@/lib/services/api'
+import { usePredio } from '@/lib/context/PredioContext'
+import { bookingService } from '@/lib/services/api/bookingService'
+import { canchaService } from '@/lib/services/api'
+import type { Booking, Cancha } from '@/types/api'
 
-async function getStats() {
-  try {
-    console.log('📊 Obteniendo estadísticas...')
-    const [users, predios, canchas] = await Promise.all([
-      userService.getAll().catch((e) => {
-        console.error('Error al obtener usuarios:', e.message)
-        return []
-      }),
-      predioService.getAll().catch((e) => {
-        console.error('Error al obtener predios:', e.message)
-        return []
-      }),
-      canchaService.getAll().catch((e) => {
-        console.error('Error al obtener canchas:', e.message)
-        return []
-      }),
-    ])
+export default function DashboardPage() {
+  const { selectedPredio, predios, loading } = usePredio()
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [canchas, setCanchas] = useState<Cancha[]>([])
+  const [loadingBookings, setLoadingBookings] = useState(false)
 
-    console.log('📈 Estadísticas obtenidas:', {
-      usuarios: users?.length || 0,
-      predios: predios?.length || 0,
-      canchas: canchas?.length || 0
-    })
-
-    return {
-      users: users?.length || 0,
-      predios: predios?.length || 0,
-      canchas: canchas?.length || 0,
+  useEffect(() => {
+    const fetchData = async () => {
+      if (selectedPredio?.id) {
+        setLoadingBookings(true)
+        try {
+          const [bookingsData, canchasData] = await Promise.all([
+            bookingService.getByOwner(selectedPredio.id),
+            canchaService.getByPredioId(selectedPredio.id)
+          ])
+          setBookings(bookingsData || [])
+          setCanchas(canchasData || [])
+        } catch (error) {
+          console.error('Error al obtener datos:', error)
+          setBookings([])
+          setCanchas([])
+        } finally {
+          setLoadingBookings(false)
+        }
+      }
     }
-  } catch (error) {
-    console.error('Error general al obtener estadísticas:', error)
-    return {
-      users: 0,
-      predios: 0,
-      canchas: 0,
-    }
+
+    fetchData()
+  }, [selectedPredio?.id])
+
+  if (loading || loadingBookings) {
+    return <Loader2 className="h-8 w-8 animate-spin" />
   }
-}
 
-export default async function DashboardPage() {
-  const stats = await getStats()
+  const totalBookings = bookings.length
+  const totalIncome = bookings.reduce((acc, booking) => acc + (booking.price || 0), 0)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          {selectedPredio ? selectedPredio.nombre : 'Selecciona un predio'}
+        </h2>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -61,7 +63,7 @@ export default async function DashboardPage() {
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{totalBookings}</div>
             <p className="text-xs text-muted-foreground">
               +0% desde el último mes
             </p>
@@ -75,23 +77,9 @@ export default async function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$0</div>
+            <div className="text-2xl font-bold">${totalIncome}</div>
             <p className="text-xs text-muted-foreground">
               +0% desde el último mes
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Usuarios Activos
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.users}</div>
-            <p className="text-xs text-muted-foreground">
-              Usuarios registrados
             </p>
           </CardContent>
         </Card>
@@ -103,9 +91,9 @@ export default async function DashboardPage() {
             <CalendarDays className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.canchas}</div>
+            <div className="text-2xl font-bold">{canchas.length}</div>
             <p className="text-xs text-muted-foreground">
-              En {stats.predios} predios
+              En {predios?.length} predios
             </p>
           </CardContent>
         </Card>
@@ -127,7 +115,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
-              <RecentBookings />
+              <RecentBookings bookings={bookings} />
             </Suspense>
           </CardContent>
         </Card>

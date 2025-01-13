@@ -1,7 +1,7 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
-import { Predio } from '@/types/api'
+import type { Predio } from '@/types/api'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,18 +16,18 @@ import { toast } from 'sonner'
 
 export const predioColumns: ColumnDef<Predio>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'nombre',
     header: 'Nombre',
   },
   {
-    accessorKey: 'address',
+    accessorKey: 'direccion',
     header: 'Dirección',
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'fechaRegistro',
     header: 'Fecha de Registro',
     cell: ({ row }) => {
-      return new Date(row.getValue('createdAt')).toLocaleDateString()
+      return new Date(row.getValue('fechaRegistro')).toLocaleDateString()
     },
   },
   {

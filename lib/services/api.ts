@@ -62,9 +62,18 @@ export const predioService = {
   getAll: async (): Promise<Predio[]> => {
     try {
       const { data } = await axios.get('/api/predios')
-      return data.predios
+      // Si la respuesta es un array directamente
+      if (Array.isArray(data)) {
+        return data
+      }
+      // Si la respuesta está dentro de una propiedad 'predios'
+      if (data?.predios && Array.isArray(data.predios)) {
+        return data.predios
+      }
+      // Si no hay datos, retornar array vacío
+      return []
     } catch (error) {
-      throw new Error('Error al obtener predios')
+      return []
     }
   },
 
@@ -109,10 +118,10 @@ export const canchaService = {
   getAll: async (): Promise<Cancha[]> => {
     try {
       const { data } = await axios.get('/api/canchas')
+      console.log('✅ Canchas obtenidas:', data.canchas.length)
       return data.canchas
     } catch (error) {
-      console.error('Error al obtener canchas', error)
-      throw new Error('Error al obtener canchas')
+      return []
     }
   },
 
