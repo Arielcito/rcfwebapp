@@ -11,7 +11,6 @@ axiosInstance.interceptors.request.use(async (config) => {
   if (session?.user?.accessToken) {
     config.headers.Authorization = `Bearer ${session.user.accessToken}`;
     config.withCredentials = true;
-    console.log('🔄 Token de acceso:', config.headers.Authorization);
   } else {
     console.log('No hay token disponible en la sesión');
   }

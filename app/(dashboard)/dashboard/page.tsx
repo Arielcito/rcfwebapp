@@ -22,7 +22,7 @@ export default function DashboardPage() {
         setLoadingBookings(true)
         try {
           const [bookingsData, canchasData] = await Promise.all([
-            bookingService.getByOwner(selectedPredio.id),
+            bookingService.getAll(),
             canchaService.getByPredioId(selectedPredio.id)
           ])
           setBookings(bookingsData || [])
@@ -44,8 +44,10 @@ export default function DashboardPage() {
     return <Loader2 className="h-8 w-8 animate-spin" />
   }
 
-  const totalBookings = bookings.length
-  const totalIncome = bookings.reduce((acc, booking) => acc + (booking.price || 0), 0)
+  const totalBookings = bookings?.length || 0
+  const totalIncome = Array.isArray(bookings) 
+    ? bookings.reduce((acc, booking) => acc + (booking.price || 0), 0)
+    : 0
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

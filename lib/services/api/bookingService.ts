@@ -1,12 +1,12 @@
 import type { Booking } from '@/types/api'
 import axiosInstance from '@/lib/axios'
 
-const BASE_URL = '/reservas'
+const BASE_URL = '/api/reservas'
 
 export const bookingService = {
   getAll: async () => {
     try {
-      const { data } = await axiosInstance.get<Booking[]>(`${BASE_URL}/user/bookings`)
+      const { data } = await axiosInstance.get<Booking[]>(`${BASE_URL}/`)
       return data || []
     } catch (error) {
       return []
@@ -82,4 +82,5 @@ export const bookingService = {
       return []
     }
   }
+
 } 
