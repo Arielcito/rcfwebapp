@@ -10,6 +10,7 @@ import { canchaService } from '@/lib/services/api'
 import { useSession } from 'next-auth/react'
 import { EditProfileDialog } from '@/components/dashboard/edit-profile-dialog'
 import { EditPredioDialog } from '@/components/dashboard/edit-predio-dialog'
+import { EditCanchaDialog } from '@/components/dashboard/edit-cancha-dialog'
 import { usePredio } from '@/lib/context/PredioContext'
 import { useState, useEffect } from 'react'
 import type { Cancha } from '@/types/api'
@@ -20,6 +21,7 @@ export default function SettingsPage() {
   const { selectedPredio, loading: loadingPredio, predios } = usePredio()
   const [canchas, setCanchas] = useState<Cancha[]>([])
   const [loadingCanchas, setLoadingCanchas] = useState(true)
+
   useEffect(() => {
     const fetchCanchas = async () => {
       if (selectedPredio?.id) {
@@ -70,8 +72,6 @@ export default function SettingsPage() {
       </div>
     )
   }
-
-  console.log('✅ Renderizando página con predio:', selectedPredio.nombre)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -131,9 +131,11 @@ export default function SettingsPage() {
               Gestiona las canchas disponibles
             </p>
           </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Nueva Cancha
-          </Button>
+          <EditCanchaDialog predioId={selectedPredio.id}>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Nueva Cancha
+            </Button>
+          </EditCanchaDialog>
         </div>
         <Suspense fallback={<Spinner size="sm" variant="primary" />}>
           <DataTable columns={canchaColumns} data={canchas} />

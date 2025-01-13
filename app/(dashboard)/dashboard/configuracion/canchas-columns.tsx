@@ -14,34 +14,59 @@ import { MoreHorizontal, Pencil, Trash } from 'lucide-react'
 import { canchaService } from '@/lib/services/api'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { Badge } from '@/components/ui/badge'
+import { EditCanchaDialog } from '@/components/dashboard/edit-cancha-dialog'
 
 export const canchaColumns: ColumnDef<Cancha>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'nombre',
     header: 'Nombre',
   },
   {
-    accessorKey: 'type',
-    header: 'Tipo',
-  },
-  {
-    accessorKey: 'size',
-    header: 'Tamaño',
-  },
-  {
-    accessorKey: 'price',
-    header: 'Precio',
+    accessorKey: 'tipoSuperficie',
+    header: 'Superficie',
     cell: ({ row }) => {
-      const price = row.getValue('price') as number
-      return `$${price}`
-    },
+      const superficie = row.getValue('tipoSuperficie') as string | null
+      return superficie || 'No especificada'
+    }
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Fecha de Registro',
+    accessorKey: 'capacidadJugadores',
+    header: 'Capacidad',
     cell: ({ row }) => {
-      return new Date(row.getValue('createdAt')).toLocaleDateString()
-    },
+      const capacidad = row.getValue('capacidadJugadores') as number | null
+      return capacidad ? `${capacidad} jugadores` : 'No especificada'
+    }
+  },
+  {
+    accessorKey: 'precioPorHora',
+    header: 'Precio/Hora',
+    cell: ({ row }) => {
+      const precio = row.getValue('precioPorHora') as string
+      return `$${precio}`
+    }
+  },
+  {
+    accessorKey: 'caracteristicas',
+    header: 'Características',
+    cell: ({ row }) => {
+      const cancha = row.original
+      const caracteristicas = []
+
+      if (cancha.tieneIluminacion) caracteristicas.push('Iluminada')
+      if (cancha.esTechada) caracteristicas.push('Techada')
+      if (cancha.requiereSeña) caracteristicas.push('Requiere seña')
+
+      return (
+        <div className="flex flex-wrap gap-1">
+          {caracteristicas.map((caract) => (
+            <Badge key={caract} variant="secondary" className="text-xs">
+              {caract}
+            </Badge>
+          ))}
+        </div>
+      )
+    }
   },
   {
     id: 'actions',
@@ -59,10 +84,6 @@ export const canchaColumns: ColumnDef<Cancha>[] = [
         }
       }
 
-      const handleEdit = () => {
-        router.push(`/dashboard/configuracion/canchas/edit/${cancha.id}`)
-      }
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -73,10 +94,12 @@ export const canchaColumns: ColumnDef<Cancha>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem onClick={handleEdit}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Editar
-            </DropdownMenuItem>
+            <EditCanchaDialog cancha={cancha} predioId={cancha.predioId}>
+              <DropdownMenuItem>
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar
+              </DropdownMenuItem>
+            </EditCanchaDialog>
             <DropdownMenuItem onClick={handleDelete} className="text-red-600">
               <Trash className="mr-2 h-4 w-4" />
               Eliminar
@@ -84,6 +107,6 @@ export const canchaColumns: ColumnDef<Cancha>[] = [
           </DropdownMenuContent>
         </DropdownMenu>
       )
-    },
-  },
+    }
+  }
 ] 

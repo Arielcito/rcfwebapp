@@ -31,13 +31,23 @@ export interface Predio {
 
 export interface Cancha {
   id: string;
-  name: string;
   predioId: string;
-  type: string;
-  size: string;
-  price: number;
+  nombre: string;
+  tipo: string | null;
+  capacidadJugadores: number | null;
+  longitud: number | null;
+  ancho: number | null;
+  tipoSuperficie: string | null;
+  tieneIluminacion: boolean | null;
+  esTechada: boolean | null;
+  precioPorHora: string;
+  estado: string | null;
+  ultimoMantenimiento: string | null;
+  equipamientoIncluido: string | null;
+  imagenUrl: string | null;
   createdAt: string;
-  updatedAt: string;
+  requiereSeña: boolean;
+  montoSeña: number;
 }
 
 // Request types
@@ -80,18 +90,40 @@ export interface UpdatePredioData {
 }
 
 export interface CreateCanchaData {
-  name: string;
+  nombre: string;
   predioId: string;
-  type: string;
-  size: string;
-  price: number;
+  tipo?: string;
+  capacidadJugadores?: number;
+  longitud?: number;
+  ancho?: number;
+  tipoSuperficie?: string;
+  tieneIluminacion?: boolean;
+  esTechada?: boolean;
+  precioPorHora: string;
+  estado?: string;
+  ultimoMantenimiento?: string;
+  equipamientoIncluido?: string;
+  imagenUrl?: string;
+  requiereSeña: boolean;
+  montoSeña: number;
 }
 
 export interface UpdateCanchaData {
-  name?: string;
-  type?: string;
-  size?: string;
-  price?: number;
+  nombre?: string;
+  tipo?: string;
+  capacidadJugadores?: number;
+  longitud?: number;
+  ancho?: number;
+  tipoSuperficie?: string;
+  tieneIluminacion?: boolean;
+  esTechada?: boolean;
+  precioPorHora?: string;
+  estado?: string;
+  ultimoMantenimiento?: string;
+  equipamientoIncluido?: string;
+  imagenUrl?: string;
+  requiereSeña?: boolean;
+  montoSeña?: number;
 }
 
 export interface UpdateUserData {

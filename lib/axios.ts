@@ -3,13 +3,15 @@ import { getSession } from 'next-auth/react';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  withCredentials: true
 });
 
 axiosInstance.interceptors.request.use(async (config) => {
   const session = await getSession();
-  
   if (session?.user?.accessToken) {
     config.headers.Authorization = `Bearer ${session.user.accessToken}`;
+    config.withCredentials = true;
+    console.log('🔄 Token de acceso:', config.headers.Authorization);
   } else {
     console.log('No hay token disponible en la sesión');
   }
@@ -33,7 +35,8 @@ axiosInstance.interceptors.response.use(
     console.error('Error en la respuesta:', {
       url: error.config?.url,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
+      headers: error.config?.headers
     });
 
     if (error.response) {

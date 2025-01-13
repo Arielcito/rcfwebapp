@@ -118,8 +118,7 @@ export const canchaService = {
   getAll: async (): Promise<Cancha[]> => {
     try {
       const { data } = await axios.get('/api/canchas')
-      console.log('✅ Canchas obtenidas:', data.canchas.length)
-      return data.canchas
+      return data || []
     } catch (error) {
       console.error('❌ Error al obtener canchas:', error)
       return []
