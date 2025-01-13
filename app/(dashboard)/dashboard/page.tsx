@@ -8,7 +8,21 @@ import { RecentBookings } from '@/components/dashboard/recent-bookings'
 import { usePredio } from '@/lib/context/PredioContext'
 import { bookingService } from '@/lib/services/api/bookingService'
 import { canchaService } from '@/lib/services/api'
-import type { Booking, Cancha } from '@/types/api'
+import type { Cancha } from '@/types/api'
+
+interface Booking {
+  id: string
+  canchaId: string
+  userId: string
+  fechaHora: string
+  duracion: number
+  precioTotal: string
+  estadoPago: string
+  metodoPago: string
+  fechaReserva: string
+  notasAdicionales: string
+  pagoId: string | null
+}
 
 export default function DashboardPage() {
   const { selectedPredio, predios, loading } = usePredio()
@@ -18,22 +32,26 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (selectedPredio?.id) {
-        setLoadingBookings(true)
-        try {
-          const [bookingsData, canchasData] = await Promise.all([
-            bookingService.getAll(),
-            canchaService.getByPredioId(selectedPredio.id)
-          ])
-          setBookings(bookingsData || [])
-          setCanchas(canchasData || [])
-        } catch (error) {
-          console.error('Error al obtener datos:', error)
-          setBookings([])
-          setCanchas([])
-        } finally {
-          setLoadingBookings(false)
-        }
+      if (!selectedPredio?.id) return
+
+      setLoadingBookings(true)
+      try {
+        const [bookingsData, canchasData] = await Promise.all([
+          bookingService.getAll(),
+          canchaService.getAll()
+        ])
+
+        console.log("canchasData", canchasData)
+
+        console.log("Predio ID", selectedPredio)
+        setBookings(bookingsData || [])
+        setCanchas(canchasData.filter((cancha) => cancha.predioId === selectedPredio.id) || [])
+      } catch (error) {
+        console.error('Error al obtener datos:', error)
+        setBookings([])
+        setCanchas([])
+      } finally {
+        setLoadingBookings(false)
       }
     }
 
@@ -41,19 +59,33 @@ export default function DashboardPage() {
   }, [selectedPredio?.id])
 
   if (loading || loadingBookings) {
-    return <Loader2 className="h-8 w-8 animate-spin" />
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  if (!selectedPredio) {
+    return (
+      <div className="flex items-center justify-center h-screen text-muted-foreground">
+        Por favor selecciona un predio para ver el dashboard
+      </div>
+    )
   }
 
   const totalBookings = bookings?.length || 0
-  const totalIncome = Array.isArray(bookings) 
-    ? bookings.reduce((acc, booking) => acc + (booking.price || 0), 0)
-    : 0
+
+  const totalIncome = bookings?.reduce((acc, booking) => {
+    const precio = Number.parseFloat(booking.precioTotal) || 0
+    return acc + precio
+  }, 0) || 0
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">
-          {selectedPredio ? selectedPredio.nombre : 'Selecciona un predio'}
+          {selectedPredio.nombre}
         </h2>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +111,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalIncome}</div>
+            <div className="text-2xl font-bold">${totalIncome.toLocaleString('es-AR')}</div>
             <p className="text-xs text-muted-foreground">
               +0% desde el último mes
             </p>
@@ -95,7 +127,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{canchas.length}</div>
             <p className="text-xs text-muted-foreground">
-              En {predios?.length} predios
+              En {predios?.length || 0} predios
             </p>
           </CardContent>
         </Card>

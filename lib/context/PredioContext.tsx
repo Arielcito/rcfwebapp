@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { predioService } from '@/lib/services/api'
 import type { Predio } from '@/types/api'
+import { useSession } from 'next-auth/react'
 
 interface PredioContextType {
   predios: Predio[]
@@ -20,6 +21,8 @@ export function PredioProvider({ children }: { children: React.ReactNode }) {
   const [selectedPredio, setSelectedPredio] = useState<Predio | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { data: session } = useSession()
+  const user = session?.user
 
   useEffect(() => {
     async function fetchPredios() {
@@ -31,7 +34,9 @@ export function PredioProvider({ children }: { children: React.ReactNode }) {
           setPredios(data)
           // Si hay predios y no hay uno seleccionado, seleccionar el primero
           if (data.length > 0 && !selectedPredio) {
-            setSelectedPredio(data[0])
+            console.log("user", user?.id)
+
+            setSelectedPredio(data.filter((predio) => predio.usuario_id === user?.id)[0])
           }
         } else {
           setError('Error al obtener los predios')

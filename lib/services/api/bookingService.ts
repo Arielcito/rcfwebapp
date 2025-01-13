@@ -6,9 +6,11 @@ const BASE_URL = '/api/reservas'
 export const bookingService = {
   getAll: async () => {
     try {
-      const { data } = await axiosInstance.get<Booking[]>(`${BASE_URL}/`)
-      return data || []
+      const { data: bookings } = await axiosInstance.get(`${BASE_URL}/`)
+
+      return bookings.data || []
     } catch (error) {
+      console.error('Error al obtener las reservas:', error)
       return []
     }
   },

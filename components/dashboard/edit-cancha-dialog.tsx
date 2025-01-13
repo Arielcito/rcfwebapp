@@ -56,7 +56,7 @@ export function EditCanchaDialog({ cancha, predioId, children }: EditCanchaDialo
     precioPorHora: cancha?.precioPorHora || '',
     requiereSeña: cancha?.requiereSeña || false,
     montoSeña: cancha?.montoSeña || 0,
-    imagen: cancha?.imagen || '',
+    imagenUrl: cancha?.imagenUrl || '',
   })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

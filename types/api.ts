@@ -9,7 +9,7 @@ export interface User {
 
 export interface Predio {
   id: string;
-  usuarioId: string | null;
+  usuario_id: string | null;
   nombre: string;
   direccion: string;
   ciudad: string;
@@ -48,6 +48,7 @@ export interface Cancha {
   createdAt: string;
   requiereSeña: boolean;
   montoSeña: number;
+  
 }
 
 // Request types
@@ -137,15 +138,14 @@ export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED'
 
 export interface Booking {
   id: string
-  date: string
-  startTime: string
-  endTime: string
   canchaId: string
   userId: string
-  status: BookingStatus
-  price: number
-  userName: string
-  canchaName: string
-  createdAt: string
-  updatedAt: string
+  fechaHora: string
+  duracion: number
+  precioTotal: string
+  estadoPago: string
+  metodoPago: string
+  fechaReserva: string
+  notasAdicionales: string
+  pagoId: string | null
 } 

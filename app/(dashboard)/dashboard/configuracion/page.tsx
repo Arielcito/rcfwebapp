@@ -26,13 +26,10 @@ export default function SettingsPage() {
     const fetchCanchas = async () => {
       if (selectedPredio?.id) {
         try {
-          console.log('⚽ Iniciando carga de canchas para el predio:', selectedPredio.id)
           const allCanchas = await canchaService.getAll()
-          console.log('📊 Total de canchas obtenidas:', allCanchas.length)
           const filteredCanchas = allCanchas.filter(
             (cancha) => cancha.predioId === selectedPredio.id
           )
-          console.log('✅ Canchas filtradas para el predio:', filteredCanchas.length)
           setCanchas(filteredCanchas)
         } catch (error) {
           console.error('❌ Error al obtener canchas:', error)
