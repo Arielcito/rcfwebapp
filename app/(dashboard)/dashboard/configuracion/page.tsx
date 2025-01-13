@@ -1,39 +1,77 @@
+'use client'
+
 import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Loader2, Settings } from 'lucide-react'
+import { Plus, Settings } from 'lucide-react'
 import { DataTable } from '@/components/ui/data-table'
 import { canchaColumns } from './canchas-columns'
 import { canchaService } from '@/lib/services/api'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { useSession } from 'next-auth/react'
 import { EditProfileDialog } from '@/components/dashboard/edit-profile-dialog'
+import { EditPredioDialog } from '@/components/dashboard/edit-predio-dialog'
+import { usePredio } from '@/lib/context/PredioContext'
+import { useState, useEffect } from 'react'
+import type { Cancha } from '@/types/api'
+import { Spinner } from '@/components/ui/spinner'
 
-async function getCanchas() {
-  try {
-    console.log('⚽ Obteniendo canchas...')
-    const session = await getServerSession(authOptions)
-    const canchas = await canchaService.getAll()
-    const filteredCanchas = canchas.filter(cancha => cancha.predioId === session?.user?.predioId)
-    console.log('✅ Canchas obtenidas:', filteredCanchas.length)
-    return filteredCanchas
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error('❌ Error al obtener canchas:', error.message)
-    } else {
-      console.error('❌ Error desconocido al obtener canchas')
+export default function SettingsPage() {
+  const { data: session } = useSession()
+  const { selectedPredio, loading: loadingPredio, predios } = usePredio()
+  const [canchas, setCanchas] = useState<Cancha[]>([])
+  const [loadingCanchas, setLoadingCanchas] = useState(true)
+  useEffect(() => {
+    const fetchCanchas = async () => {
+      if (selectedPredio?.id) {
+        try {
+          console.log('⚽ Iniciando carga de canchas para el predio:', selectedPredio.id)
+          const allCanchas = await canchaService.getAll()
+          console.log('📊 Total de canchas obtenidas:', allCanchas.length)
+          const filteredCanchas = allCanchas.filter(
+            (cancha) => cancha.predioId === selectedPredio.id
+          )
+          console.log('✅ Canchas filtradas para el predio:', filteredCanchas.length)
+          setCanchas(filteredCanchas)
+        } catch (error) {
+          console.error('❌ Error al obtener canchas:', error)
+        } finally {
+          setLoadingCanchas(false)
+        }
+      } else {
+        console.log('⚠️ No hay predio seleccionado')
+        setLoadingCanchas(false)
+      }
     }
-    return []
-  }
-}
 
-export default async function SettingsPage() {
-  const session = await getServerSession(authOptions)
-  const canchas = await getCanchas()
+    fetchCanchas()
+  }, [selectedPredio?.id])
 
   if (!session?.user) {
+    console.log('❌ No hay sesión de usuario activa')
     return null
   }
+
+  if (loadingPredio || loadingCanchas) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner size="lg" variant="primary" />
+      </div>
+    )
+  }
+
+  if (!selectedPredio) {
+    console.log('❌ No hay predio seleccionado. Predios disponibles:', predios)
+    return (
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Configuración</h2>
+        </div>
+        <p className="text-muted-foreground">No se encontró información del predio</p>
+      </div>
+    )
+  }
+
+  console.log('✅ Renderizando página con predio:', selectedPredio.nombre)
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -59,6 +97,30 @@ export default async function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Datos del Predio</CardTitle>
+            <EditPredioDialog predio={selectedPredio}>
+              <Button variant="ghost" size="icon">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </EditPredioDialog>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Nombre: {selectedPredio.nombre}</p>
+              <p className="text-sm font-medium">Dirección: {selectedPredio.direccion}</p>
+              <p className="text-sm font-medium">Ciudad: {selectedPredio.ciudad}</p>
+              <p className="text-sm font-medium">Provincia: {selectedPredio.provincia}</p>
+              <p className="text-sm font-medium">Teléfono: {selectedPredio.telefono}</p>
+              <p className="text-sm font-medium">Email: {selectedPredio.email}</p>
+              <p className="text-sm font-medium">
+                Horario: {new Date(selectedPredio.horarioApertura).toLocaleTimeString()} - {new Date(selectedPredio.horarioCierre).toLocaleTimeString()}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="space-y-4">
@@ -73,7 +135,7 @@ export default async function SettingsPage() {
             <Plus className="mr-2 h-4 w-4" /> Nueva Cancha
           </Button>
         </div>
-        <Suspense fallback={<Loader2 className="h-4 w-4 animate-spin" />}>
+        <Suspense fallback={<Spinner size="sm" variant="primary" />}>
           <DataTable columns={canchaColumns} data={canchas} />
         </Suspense>
       </div>

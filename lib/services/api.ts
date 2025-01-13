@@ -121,6 +121,7 @@ export const canchaService = {
       console.log('✅ Canchas obtenidas:', data.canchas.length)
       return data.canchas
     } catch (error) {
+      console.error('❌ Error al obtener canchas:', error)
       return []
     }
   },
