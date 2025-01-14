@@ -38,7 +38,7 @@ export function DashboardNav({ className, ...props }: DashboardNavProps) {
     <nav className={cn("bg-background border-r", className)} {...props}>
       <div className="flex h-16 items-center border-b px-4">
         <Link href="/">
-          <h2 className="text-lg font-semibold">RCF Admin</h2>
+          <h2 className="text-lg font-semibold">RCF</h2>
         </Link>
       </div>
       <div className="space-y-1 p-4">

@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const response = await axiosInstance.post('/api/users/login', credentials)
-          
+
           if (response.data) {
             return {
               id: response.data.user.id,

@@ -34,7 +34,9 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
     const fetchUser = async () => {
       if (selectedBooking) {
         try {
+          console.log("selectedBooking", selectedBooking)
           const user = await userService.getById(selectedBooking.userId)
+          console.log("user", user)
           setBookingUser(user)
         } catch (error) {
           console.error('Error al obtener datos del usuario:', error)
@@ -108,12 +110,13 @@ export function RecentBookings({ bookings }: RecentBookingsProps) {
           {selectedBooking && (
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <div className="font-semibold">Usuario:</div>
+                <div className="font-semibold">Datos del cliente:</div>
                 <div className="col-span-3">
                   {bookingUser ? (
                     <div className="space-y-1">
                       <p>{bookingUser.name}</p>
                       <p className="text-sm text-muted-foreground">{bookingUser.email}</p>
+                      <p className="text-sm text-muted-foreground">+54{bookingUser.telefono}</p>
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">Cargando datos del usuario...</p>

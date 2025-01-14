@@ -24,7 +24,8 @@ export const userService = {
   getById: async (id: string): Promise<User> => {
     try {
       const { data } = await axios.get(`/api/users/${id}`)
-      return data.user
+      console.log("data", data)
+      return data
     } catch (error) {
       throw new Error('Error al obtener usuario por ID')
     }
