@@ -25,54 +25,67 @@ export function PredioProvider({ children }: { children: React.ReactNode }) {
   const user = session?.user
 
   useEffect(() => {
+    console.log('[PredioContext] Iniciando fetchPredios')
+    console.log('[PredioContext] Usuario actual:', user?.id)
+    
     async function fetchPredios() {
       try {
         setLoading(true)
         setError(null)
         const data = await predioService.getAll()
+        console.log('[PredioContext] Predios obtenidos:', data)
+        
         if (Array.isArray(data)) {
           setPredios(data)
-          // Si hay predios y no hay uno seleccionado, seleccionar el primero
           if (data.length > 0 && !selectedPredio) {
-            console.log("user", user?.id)
-
-            setSelectedPredio(data.filter((predio) => predio.usuario_id === user?.id)[0])
+            const prediosUsuario = data.filter((predio) => predio.usuario_id === user?.id)
+            console.log('[PredioContext] Predios filtrados por usuario:', prediosUsuario)
+            setSelectedPredio(prediosUsuario[0])
           }
         } else {
+          console.error('[PredioContext] Error: datos recibidos no son un array')
           setError('Error al obtener los predios')
           setPredios([])
         }
       } catch (error) {
+        console.error('[PredioContext] Error en fetchPredios:', error)
         setError('Error al cargar los predios')
         setPredios([])
       } finally {
         setLoading(false)
+        console.log('[PredioContext] Estado final:', { loading: false, prediosCount: predios.length, selectedPredio })
       }
     }
 
     fetchPredios()
-  }, [selectedPredio])
+  }, [selectedPredio, user?.id])
 
   const selectPredio = (predio: Predio) => {
+    console.log('[PredioContext] Seleccionando predio:', predio)
     setSelectedPredio(predio)
   }
 
   const refreshPredios = async () => {
+    console.log('[PredioContext] Iniciando refreshPredios')
     setLoading(true)
     setError(null)
     try {
       const data = await predioService.getAll()
+      console.log('[PredioContext] Datos actualizados:', data)
       if (Array.isArray(data)) {
         setPredios(data)
       } else {
+        console.error('[PredioContext] Error: datos actualizados no son un array')
         setError('Error al obtener los predios')
         setPredios([])
       }
     } catch (error) {
+      console.error('[PredioContext] Error en refreshPredios:', error)
       setError('Error al cargar los predios')
       setPredios([])
     } finally {
       setLoading(false)
+      console.log('[PredioContext] Refresh completado')
     }
   }
 
