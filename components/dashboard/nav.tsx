@@ -4,61 +4,74 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { LayoutDashboard, Calendar, Users, Settings } from 'lucide-react'
+import { LayoutDashboard, Calendar, Users, Settings, BookOpen } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 interface DashboardNavProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const navItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard
-  },
-  {
-    title: "Reservas",
-    href: "/dashboard/reservas",
-    icon: Calendar
-  },
-  {
-    title: "Usuarios",
-    href: "/dashboard/usuarios",
-    icon: Users
-  },
-  {
-    title: "Configuración",
-    href: "/dashboard/configuracion",
-    icon: Settings
-  }
-]
-
 export function DashboardNav({ className, ...props }: DashboardNavProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
+
+  const isOwner = session?.user?.role === 'OWNER'
+
+  const items = [
+    {
+      title: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      variant: "ghost" as const,
+    },
+    {
+      title: "Reservas",
+      href: "/dashboard/reservas",
+      icon: BookOpen,
+      variant: "ghost" as const,
+    },
+    {
+      title: "Calendario",
+      href: "/dashboard/calendario",
+      icon: Calendar,
+      variant: "ghost" as const,
+    },
+    ...(isOwner ? [{
+      title: "Usuarios",
+      href: "/dashboard/usuarios",
+      icon: Users,
+      variant: "ghost" as const,
+    }] : []),
+    {
+      title: "Configuración",
+      href: "/dashboard/configuracion",
+      icon: Settings,
+      variant: "ghost" as const,
+    },
+  ]
 
   return (
-    <nav className={cn("bg-background border-r", className)} {...props}>
-      <div className="flex h-16 items-center border-b px-4">
-        <Link href="/">
-          <h2 className="text-lg font-semibold">RCF</h2>
-        </Link>
-      </div>
-      <div className="space-y-1 p-4">
-        {navItems.map((item) => (
-          <Button
-            key={item.href}
-            variant={pathname === item.href ? "secondary" : "ghost"}
-            className={cn(
-              "w-full justify-start",
-              pathname === item.href && "bg-muted"
-            )}
-            asChild
-          >
-            <Link href={item.href}>
-              <item.icon className="mr-2 h-4 w-4" />
-              {item.title}
-            </Link>
-          </Button>
-        ))}
-      </div>
+    <nav
+      className={cn("flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1", className)}
+      {...props}
+    >
+      {items.map((item) => (
+        <Button
+          key={item.href}
+          variant={item.variant}
+          size="lg"
+          className={cn(
+            "justify-start pl-6 hover:bg-primary/10",
+            pathname === item.href
+              ? "bg-primary/10 text-primary hover:bg-primary/20"
+              : "text-muted-foreground hover:text-primary"
+          )}
+          asChild
+        >
+          <Link href={item.href}>
+            <item.icon className="mr-2 h-4 w-4" />
+            {item.title}
+          </Link>
+        </Button>
+      ))}
     </nav>
   )
 } 

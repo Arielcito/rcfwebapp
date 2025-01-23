@@ -1,26 +1,29 @@
-import { signOut } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
-import { LogOut, Menu } from 'lucide-react'
+'use client'
 
-export function DashboardHeader() {
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { UserNav } from './user-nav'
+
+interface DashboardHeaderProps {
+  className?: string
+}
+
+export function DashboardHeader({ className }: DashboardHeaderProps) {
   return (
-    <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-full items-center justify-between px-4">
-        <button className="md:hidden">
-          <Menu className="h-6 w-6" />
-        </button>
-        
-        <div className="ml-auto flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => signOut({ callbackUrl: '/login' })}
-            className="text-foreground"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Cerrar sesión
-          </Button>
-        </div>
+    <header className={`border-b bg-background px-4 py-3 ${className}`}>
+      <div className="flex h-12 items-center justify-between">
+        <Link href="/dashboard" className="flex items-center space-x-3">
+          <Image 
+            src="/logo.png" 
+            alt="Logo" 
+            width={40} 
+            height={40} 
+            className="object-contain"
+          />
+          <span className="text-xl font-bold">RCF App</span>
+        </Link>
+        <UserNav />
       </div>
     </header>
   )

@@ -55,6 +55,15 @@ export const userService = {
     } catch (error) {
       throw new Error('Error al verificar email')
     }
+  },
+
+  register: async (userData: User): Promise<User> => {
+    try {
+      const { data } = await axios.post('/api/users/register', userData)
+      return data
+    } catch (error) {
+      throw new Error('Error al registrar usuario')
+    }
   }
 }
 
