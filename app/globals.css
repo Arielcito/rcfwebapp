@@ -76,3 +76,78 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos para FullCalendar */
+.fc {
+  @apply font-sans;
+}
+
+.fc .fc-toolbar-title {
+  @apply text-xl font-bold text-gray-800;
+}
+
+.fc .fc-button {
+  @apply bg-gray-600 hover:bg-gray-700 text-white border-0 rounded-md px-4 py-2 text-sm font-medium transition-colors;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  @apply bg-gray-800;
+}
+
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell-cushion {
+  @apply text-gray-700;
+}
+
+.fc .fc-timegrid-slot-label {
+  @apply text-gray-600 text-sm;
+}
+
+.fc .fc-timegrid-axis {
+  @apply text-gray-500;
+}
+
+.fc .fc-event {
+  @apply cursor-pointer transition-transform hover:scale-[1.02] shadow-sm;
+}
+
+.fc .fc-event-title {
+  @apply font-medium;
+}
+
+.fc .fc-event-time {
+  @apply font-normal;
+}
+
+.fc .fc-highlight {
+  @apply bg-primary-100;
+}
+
+.fc .fc-day-today {
+  @apply bg-gray-100;
+}
+
+.fc .fc-timegrid-now-indicator-line {
+  @apply border-primary-500;
+}
+
+.fc .fc-timegrid-now-indicator-arrow {
+  @apply border-primary-500;
+}
+
+.fc .fc-more-link {
+  @apply text-primary-600 hover:text-primary-700;
+}
+
+.fc .fc-popover {
+  @apply bg-white shadow-lg rounded-lg border border-gray-200;
+}
+
+.fc .fc-popover-header {
+  @apply bg-gray-100 text-gray-700 px-4 py-2 font-medium;
+}
+
+.fc .fc-list-empty {
+  @apply bg-gray-50 text-gray-500;
+}

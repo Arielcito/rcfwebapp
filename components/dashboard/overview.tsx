@@ -10,8 +10,6 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
-import { useEffect, useState } from 'react'
-import { bookingService } from '@/lib/services/api/bookingService'
 import type { Booking } from '@/types/api'
 
 ChartJS.register(
@@ -23,25 +21,12 @@ ChartJS.register(
   Legend
 )
 
-export function Overview() {
-  const [bookings, setBookings] = useState<Booking[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+interface OverviewProps {
+  selectedYear: string
+  bookings: Booking[]
+}
 
-  useEffect(() => {
-    const loadBookings = async () => {
-      try {
-        const data = await bookingService.getAll()
-        setBookings(data)
-      } catch (error) {
-        console.error('Error al cargar reservas:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadBookings()
-  }, [])
-
+export function Overview({ selectedYear, bookings }: OverviewProps) {
   const processBookingData = () => {
     const monthCounts = new Array(12).fill(0)
     
@@ -58,15 +43,11 @@ export function Overview() {
     labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
     datasets: [
       {
-        label: 'Reservas',
+        label: `Reservas ${selectedYear}`,
         data: processBookingData(),
         backgroundColor: 'rgba(59, 130, 246, 0.5)',
       },
     ],
-  }
-
-  if (isLoading) {
-    return <div>Cargando datos...</div>
   }
 
   return <Bar data={data} />
