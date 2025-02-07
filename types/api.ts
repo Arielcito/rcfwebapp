@@ -10,25 +10,57 @@ export interface User {
 
 export interface Predio {
   id: string;
-  usuario_id: string | null;
+  usuarioId: string;
   nombre: string;
   direccion: string;
   ciudad: string;
   provincia: string;
-  codigoPostal: string | null;
-  telefono: string;
-  email: string | null;
-  latitud: string;
-  longitud: string;
-  capacidadEstacionamiento: number | null;
-  tieneVestuarios: boolean | null;
-  tieneCafeteria: boolean | null;
-  horarioApertura: string;
-  horarioCierre: string;
-  diasOperacion: string[] | null;
-  imagenUrl: string | null;
-  fechaRegistro: string;
+  codigoPostal?: string;
+  telefono?: string;
+  email?: string;
+  cbu?: string;
+  titularCuenta?: string;
+  tipoCuenta?: string;
+  banco?: string;
+  numeroCuenta?: string;
+  latitud?: number;
+  longitud?: number;
+  capacidadEstacionamiento?: number;
+  tieneVestuarios?: boolean;
+  tieneCafeteria?: boolean;
+  horarioApertura?: string;
+  horarioCierre?: string;
+  diasOperacion?: string;
+  imagenUrl?: string;
+  fechaRegistro?: Date;
 }
+
+export interface PredioCreationData {
+  usuarioId: string;
+  nombre: string;
+  direccion: string;
+  ciudad: string;
+  provincia: string;
+  codigoPostal?: string;
+  telefono?: string;
+  email?: string;
+  cbu?: string;
+  titularCuenta?: string;
+  tipoCuenta?: string;
+  banco?: string;
+  numeroCuenta?: string;
+  latitud?: number;
+  longitud?: number;
+  capacidadEstacionamiento?: number;
+  tieneVestuarios?: boolean;
+  tieneCafeteria?: boolean;
+  horarioApertura?: string;
+  horarioCierre?: string;
+  diasOperacion?: string;
+  imagenUrl?: string;
+}
+
+export interface PredioUpdateData extends Partial<PredioCreationData> {}
 
 export interface Cancha {
   id: string;
@@ -54,42 +86,31 @@ export interface Cancha {
 
 // Request types
 export interface CreatePredioData {
+  usuarioId: string;
   nombre: string;
   direccion: string;
   ciudad: string;
   provincia: string;
   codigoPostal?: string;
-  telefono: string;
-  email?: string;
-  latitud: string;
-  longitud: string;
-  capacidadEstacionamiento?: number;
-  tieneVestuarios?: boolean;
-  tieneCafeteria?: boolean;
-  horarioApertura: string;
-  horarioCierre: string;
-  diasOperacion?: string[];
-  imagenUrl?: string;
-}
-
-export interface UpdatePredioData {
-  nombre?: string;
-  direccion?: string;
-  ciudad?: string;
-  provincia?: string;
-  codigoPostal?: string;
   telefono?: string;
   email?: string;
-  latitud?: string;
-  longitud?: string;
+  cbu?: string;
+  titularCuenta?: string;
+  tipoCuenta?: string;
+  banco?: string;
+  numeroCuenta?: string;
+  latitud?: number;
+  longitud?: number;
   capacidadEstacionamiento?: number;
   tieneVestuarios?: boolean;
   tieneCafeteria?: boolean;
   horarioApertura?: string;
   horarioCierre?: string;
-  diasOperacion?: string[];
+  diasOperacion?: string;
   imagenUrl?: string;
 }
+
+export interface UpdatePredioData extends Partial<CreatePredioData> {}
 
 export interface CreateCanchaData {
   nombre: string;
@@ -149,4 +170,60 @@ export interface Booking {
   fechaReserva: string
   notasAdicionales: string
   pagoId: string | null
+}
+
+export interface CategoriaMovimiento {
+  id: string
+  nombre: string
+  tipo: 'INGRESO' | 'EGRESO'
+  descripcion?: string
+  activo: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface MovimientoCaja {
+  id: string
+  predioId: string
+  categoriaId: string
+  concepto: string
+  monto: number
+  tipo: 'INGRESO' | 'EGRESO'
+  metodoPago: 'EFECTIVO' | 'TRANSFERENCIA' | 'DEBITO' | 'CREDITO' | 'MERCADOPAGO' | 'OTRO'
+  fechaMovimiento: string
+  comprobante?: string
+  notasAdicionales?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface MovimientoCajaCreationData {
+  predioId: string
+  categoriaId: string
+  concepto: string
+  monto: number
+  tipo: 'INGRESO' | 'EGRESO'
+  metodoPago: 'EFECTIVO' | 'TRANSFERENCIA' | 'DEBITO' | 'CREDITO' | 'MERCADOPAGO' | 'OTRO'
+  fechaMovimiento: string
+  comprobante?: string
+  notasAdicionales?: string
+}
+
+export interface MovimientoCajaUpdateData extends Partial<MovimientoCajaCreationData> {}
+
+export interface MovimientoStats {
+  totalIngresos: number
+  totalEgresos: number
+  balance: number
+  movimientosPorCategoria: {
+    categoriaId: string
+    categoriaNombre: string
+    total: number
+    cantidad: number
+  }[]
+  movimientosPorMetodoPago: {
+    metodoPago: string
+    total: number
+    cantidad: number
+  }[]
 } 

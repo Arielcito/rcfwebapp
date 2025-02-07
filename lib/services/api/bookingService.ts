@@ -3,6 +3,13 @@ import axiosInstance from '@/lib/axios'
 
 const BASE_URL = '/api/reservas'
 
+interface FrequentClient {
+  userId: string
+  totalBookings: number
+  totalSpent: number
+  lastBooking: Booking
+}
+
 export const bookingService = {
   getAll: async () => {
     try {
@@ -83,6 +90,36 @@ export const bookingService = {
     } catch (error) {
       return []
     }
-  }
+  },
 
+  getFrequentClients: async (): Promise<FrequentClient[]> => {
+    try {
+      const bookings = await bookingService.getAll()
+      
+      // Agrupar reservas por usuario
+      const userBookings = bookings.reduce((acc: Record<string, Booking[]>, booking: Booking) => {
+        if (!acc[booking.userId]) {
+          acc[booking.userId] = []
+        }
+        acc[booking.userId].push(booking)
+        return acc
+      }, {})
+
+      // Calcular estadísticas por usuario
+      const frequentClients = Object.entries(userBookings).map(([userId, userBookings]): FrequentClient => ({
+        userId,
+        totalBookings: userBookings.length,
+        totalSpent: userBookings.reduce((sum: number, booking: Booking) => sum + Number(booking.precioTotal), 0),
+        lastBooking: userBookings.reduce((latest: Booking, booking: Booking) => 
+          new Date(booking.fechaHora) > new Date(latest.fechaHora) ? booking : latest
+        , userBookings[0]),
+      }))
+
+      // Ordenar por cantidad de reservas (descendente)
+      return frequentClients.sort((a, b) => b.totalBookings - a.totalBookings)
+    } catch (error) {
+      console.error('Error al obtener clientes frecuentes:', error)
+      return []
+    }
+  }
 } 

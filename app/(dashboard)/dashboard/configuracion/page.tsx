@@ -29,7 +29,7 @@ export default function SettingsPage() {
       setHasSelectedInitialPredio(true)
       selectPredio(predios[0])
     }
-  }, [loadingPredio, predios, selectedPredio, hasSelectedInitialPredio])
+  }, [loadingPredio, predios, selectedPredio, hasSelectedInitialPredio, selectPredio])
 
   useEffect(() => {
     const fetchCanchas = async () => {
@@ -61,7 +61,7 @@ export default function SettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-primary-100 to-secondary-100">
         <div className="relative">
-          <div className="absolute inset-0 animate-ping rounded-full bg-primary-200 opacity-25"></div>
+          <div className="absolute inset-0 animate-ping rounded-full bg-primary-200 opacity-25" />
           <Spinner size="lg" className="relative z-10 text-primary-600" />
         </div>
         <p className="mt-4 text-secondary-600 animate-pulse">Cargando configuración...</p>
@@ -159,15 +159,48 @@ export default function SettingsPage() {
                       <p className="text-sm font-medium">{selectedPredio.provincia}</p>
                     </div>
                   </div>
+
+                  <div className="pt-4 border-t">
+                    <h4 className="text-sm font-medium mb-2">Información Bancaria</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">CBU</p>
+                        <p className="text-sm font-medium">{selectedPredio.cbu || 'No especificado'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Banco</p>
+                        <p className="text-sm font-medium">{selectedPredio.banco || 'No especificado'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Titular</p>
+                        <p className="text-sm font-medium">{selectedPredio.titularCuenta || 'No especificado'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Tipo de Cuenta</p>
+                        <p className="text-sm font-medium">{selectedPredio.tipoCuenta || 'No especificado'}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-xs text-muted-foreground">Número de Cuenta</p>
+                        <p className="text-sm font-medium">{selectedPredio.numeroCuenta || 'No especificado'}</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="pt-2 border-t">
                     <p className="text-xs text-muted-foreground pt-2">Horario de Atención</p>
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">
-                        {new Date(selectedPredio.horarioApertura).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {selectedPredio.horarioApertura ? 
+                          new Date(selectedPredio.horarioApertura).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : 'No especificado'
+                        }
                       </p>
                       <span className="text-muted-foreground">hasta</span>
                       <p className="text-sm font-medium">
-                        {new Date(selectedPredio.horarioCierre).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {selectedPredio.horarioCierre ? 
+                          new Date(selectedPredio.horarioCierre).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          : 'No especificado'
+                        }
                       </p>
                     </div>
                   </div>

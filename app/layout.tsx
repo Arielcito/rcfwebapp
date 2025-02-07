@@ -19,6 +19,13 @@ export default async function RootLayout({
 
   return (
     <html lang="es">
+      <head>
+        <script 
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
+          async
+          defer
+        />
+      </head>
       <body className={inter.className}>
         <SessionProvider session={session}>
           {children}
