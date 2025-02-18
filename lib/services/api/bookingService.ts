@@ -103,16 +103,16 @@ export const bookingService = {
         }
         acc[booking.userId].push(booking)
         return acc
-      }, {})
+      }, {} as Record<string, Booking[]>)
 
       // Calcular estadísticas por usuario
-      const frequentClients = Object.entries(userBookings).map(([userId, userBookings]): FrequentClient => ({
+      const frequentClients = Object.entries(userBookings as Record<string, Booking[]>).map(([userId, bookings]: [string, Booking[]]): FrequentClient => ({
         userId,
-        totalBookings: userBookings.length,
-        totalSpent: userBookings.reduce((sum: number, booking: Booking) => sum + Number(booking.precioTotal), 0),
-        lastBooking: userBookings.reduce((latest: Booking, booking: Booking) => 
+        totalBookings: bookings.length,
+        totalSpent: bookings.reduce((sum: number, booking: Booking) => sum + Number(booking.precioTotal), 0),
+        lastBooking: bookings.reduce((latest: Booking, booking: Booking) => 
           new Date(booking.fechaHora) > new Date(latest.fechaHora) ? booking : latest
-        , userBookings[0]),
+        , bookings[0]),
       }))
 
       // Ordenar por cantidad de reservas (descendente)

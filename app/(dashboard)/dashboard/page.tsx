@@ -11,6 +11,8 @@ import { canchaService } from '@/lib/services/api'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import type { Cancha } from '@/types/api'
+import { IncomeBreakdown } from '@/components/dashboard/income-breakdown'
+import { ExpensesBreakdown } from '@/components/dashboard/expenses-breakdown'
 
 interface Booking {
   id: string
@@ -211,6 +213,28 @@ export default function DashboardPage() {
             <p className="text-xs text-info-dark">
               En {predios?.length || 0} predios
             </p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="hover:shadow-lg transition-all duration-300 bg-white/50 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-secondary-800">Desglose de Ingresos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <IncomeBreakdown selectedYear={selectedYear} />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="hover:shadow-lg transition-all duration-300 bg-white/50 backdrop-blur">
+          <CardHeader>
+            <CardTitle className="text-secondary-800">Desglose de Egresos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ExpensesBreakdown selectedYear={selectedYear} />
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -19,6 +19,7 @@ import type { Predio } from '@/types/api'
 import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete'
+import { Switch } from '@/components/ui/switch'
 
 interface EditPredioDialogProps {
   predio: Predio
@@ -36,17 +37,22 @@ export function EditPredioDialog({ predio, children }: EditPredioDialogProps) {
     ciudad: predio.ciudad,
     provincia: predio.provincia,
     codigoPostal: predio.codigoPostal || '',
-    telefono: predio.telefono,
+    telefono: predio.telefono || '',
     email: predio.email || '',
-    horarioApertura: predio.horarioApertura,
-    horarioCierre: predio.horarioCierre,
     cbu: predio.cbu || '',
     banco: predio.banco || '',
     titularCuenta: predio.titularCuenta || '',
     tipoCuenta: predio.tipoCuenta || '',
     numeroCuenta: predio.numeroCuenta || '',
-    latitud: predio.latitud,
-    longitud: predio.longitud,
+    latitud: predio.latitud || undefined,
+    longitud: predio.longitud || undefined,
+    capacidadEstacionamiento: predio.capacidadEstacionamiento || undefined,
+    tieneVestuarios: predio.tieneVestuarios || false,
+    tieneCafeteria: predio.tieneCafeteria || false,
+    horarioApertura: predio.horarioApertura || '',
+    horarioCierre: predio.horarioCierre || '',
+    diasOperacion: predio.diasOperacion || '',
+    imagenUrl: predio.imagenUrl || '',
   })
 
   const handleAddressSelect = (address: {
@@ -253,6 +259,67 @@ export function EditPredioDialog({ predio, children }: EditPredioDialogProps) {
                     }
                     className="col-span-3"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Características del Predio */}
+            <div className="space-y-4 pt-4">
+              <h4 className="text-sm font-medium mb-2 text-primary">Características del Predio</h4>
+              <div className="space-y-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="capacidadEstacionamiento" className="text-right">
+                    Capacidad de Estacionamiento
+                  </Label>
+                  <Input
+                    id="capacidadEstacionamiento"
+                    type="number"
+                    value={formData.capacidadEstacionamiento || ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        capacidadEstacionamiento: e.target.value ? Number(e.target.value) : undefined
+                      }))
+                    }
+                    placeholder="Cantidad de vehículos"
+                    className="col-span-3"
+                  />
+                </div>
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="tieneVestuarios" className="text-right">
+                    Vestuarios
+                  </Label>
+                  <div className="flex items-center space-x-2 col-span-3">
+                    <Switch
+                      id="tieneVestuarios"
+                      checked={formData.tieneVestuarios}
+                      onCheckedChange={(checked) =>
+                        setFormData((prev) => ({ ...prev, tieneVestuarios: checked }))
+                      }
+                    />
+                    <Label htmlFor="tieneVestuarios" className="text-sm text-muted-foreground">
+                      {formData.tieneVestuarios ? 'Disponible' : 'No disponible'}
+                    </Label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="tieneCafeteria" className="text-right">
+                    Cafetería
+                  </Label>
+                  <div className="flex items-center space-x-2 col-span-3">
+                    <Switch
+                      id="tieneCafeteria"
+                      checked={formData.tieneCafeteria}
+                      onCheckedChange={(checked) =>
+                        setFormData((prev) => ({ ...prev, tieneCafeteria: checked }))
+                      }
+                    />
+                    <Label htmlFor="tieneCafeteria" className="text-sm text-muted-foreground">
+                      {formData.tieneCafeteria ? 'Disponible' : 'No disponible'}
+                    </Label>
+                  </div>
                 </div>
               </div>
             </div>

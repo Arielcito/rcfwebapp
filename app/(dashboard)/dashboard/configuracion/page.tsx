@@ -204,6 +204,33 @@ export default function SettingsPage() {
                       </p>
                     </div>
                   </div>
+
+                  <div className="pt-4 border-t">
+                    <h4 className="text-sm font-medium mb-2">Características</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Estacionamiento</p>
+                        <p className="text-sm font-medium">
+                          {selectedPredio.capacidadEstacionamiento 
+                            ? `${selectedPredio.capacidadEstacionamiento} vehículos`
+                            : 'No especificado'
+                          }
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Vestuarios</p>
+                        <p className="text-sm font-medium">
+                          {selectedPredio.tieneVestuarios ? 'Disponible' : 'No disponible'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Cafetería</p>
+                        <p className="text-sm font-medium">
+                          {selectedPredio.tieneCafeteria ? 'Disponible' : 'No disponible'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

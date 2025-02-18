@@ -15,9 +15,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import type { MovimientoCaja } from '@/types/api'
 import { MovimientoDialog } from './movimiento-dialog'
-import { movimientoService } from '@/lib/services/api'
+
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { movimientoService } from '@/lib/services/api/movimientoService'
 
 export const columns: ColumnDef<MovimientoCaja>[] = [
   {

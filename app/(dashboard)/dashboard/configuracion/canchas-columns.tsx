@@ -60,7 +60,7 @@ export const canchaColumns: ColumnDef<Cancha>[] = [
       return (
         <div className="flex flex-wrap gap-1">
           {caracteristicas.map((caract) => (
-            <Badge key={caract} variant="secondary" className="text-xs">
+            <Badge key={caract} variant="outline" className="text-xs">
               {caract}
             </Badge>
           ))}

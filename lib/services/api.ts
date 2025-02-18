@@ -1,3 +1,4 @@
+import { RegisterUserData } from '@/app/(dashboard)/dashboard/usuarios/page'
 import axios from '@/lib/axios'
 import type {
   User,
@@ -57,7 +58,7 @@ export const userService = {
     }
   },
 
-  register: async (userData: User): Promise<User> => {
+  register: async (userData: RegisterUserData): Promise<User> => {
     try {
       const { data } = await axios.post('/api/users/register', userData)
       return data

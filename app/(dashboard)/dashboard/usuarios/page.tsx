@@ -22,7 +22,7 @@ interface User {
   telefono: string
 }
 
-interface RegisterUserData {
+export interface RegisterUserData {
   name: string
   email: string
   password: string

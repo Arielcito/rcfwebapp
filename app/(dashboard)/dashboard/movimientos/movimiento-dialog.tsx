@@ -20,12 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { movimientoService } from '@/lib/services/api'
+
 import { toast } from 'sonner'
 import type { MovimientoCaja, CategoriaMovimiento } from '@/types/api'
 import { useRouter } from 'next/navigation'
 import { usePredio } from '@/lib/context/PredioContext'
 import { format } from 'date-fns'
+import { movimientoService } from '@/lib/services/api/movimientoService'
 
 interface MovimientoDialogProps {
   movimiento?: MovimientoCaja
@@ -130,7 +131,7 @@ export function MovimientoDialog({ movimiento, children }: MovimientoDialogProps
               </Label>
               <Select
                 value={formData.tipo}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, tipo: value }))}
+                onValueChange={(value: "INGRESO" | "EGRESO") => setFormData((prev) => ({ ...prev, tipo: value }))}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Selecciona el tipo" />
@@ -196,7 +197,8 @@ export function MovimientoDialog({ movimiento, children }: MovimientoDialogProps
               </Label>
               <Select
                 value={formData.metodoPago}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, metodoPago: value }))}
+                onValueChange={(value: "EFECTIVO" | "TRANSFERENCIA" | "DEBITO" | "CREDITO" | "MERCADOPAGO" | "OTRO") => 
+                  setFormData((prev) => ({ ...prev, metodoPago: value }))}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Selecciona el método de pago" />

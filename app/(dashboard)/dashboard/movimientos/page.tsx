@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, ArrowUpCircle, ArrowDownCircle, Loader2, Plus } from 'lucide-react'
 import { usePredio } from '@/lib/context/PredioContext'
-import { movimientoService } from '@/lib/services/api'
+
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
 import { columns } from './columns'
@@ -12,6 +12,7 @@ import { MovimientoDialog } from './movimiento-dialog'
 import type { MovimientoCaja, MovimientoStats } from '@/types/api'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { movimientoService } from '@/lib/services/api/movimientoService'
 
 export default function MovimientosPage() {
   const { selectedPredio } = usePredio()

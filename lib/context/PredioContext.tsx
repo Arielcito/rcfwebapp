@@ -37,7 +37,9 @@ export function PredioProvider({ children }: { children: React.ReactNode }) {
         if (Array.isArray(data)) {
           setPredios(data)
           if (data.length > 0) {
-            const prediosUsuario = data.filter((predio) => predio.usuario_id === user?.id)
+            const prediosUsuario = data.filter((predio) => predio.usuarioId === user?.id)
+            console.log(prediosUsuario)
+            console.log(user?.id)
             if (prediosUsuario.length > 0) {
               setSelectedPredio(prediosUsuario[0])
             }
